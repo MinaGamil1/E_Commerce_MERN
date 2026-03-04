@@ -32,7 +32,7 @@ export const login =async ({email,password}:loginParams)=>
 
         if(!findUser)
             {
-                return{data:"incorrect email or password!",statuscode:400}
+                return{data:"incorrect email or password!",statuscode:401}
             }
 
         const passwordMatch = await bcrypt.compare(password,findUser.password)
@@ -44,5 +44,5 @@ export const login =async ({email,password}:loginParams)=>
     }
     const generateJWT = (data:any)=>
     {
-        return jwt.sign(data , "b$p)|3I0=4JO+@AA", {expiresIn:"24h"})
+        return jwt.sign(data , "b1ca21fc2cfeb79bc5a14300bb998f7c6496c12d2668d92f66742f5d713e5732", {expiresIn:"72h"})
     }

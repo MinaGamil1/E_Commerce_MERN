@@ -1,12 +1,8 @@
-import { NextFunction, request, Request, Response } from "express";
+import { NextFunction,  Response } from "express";
 import jwt from "jsonwebtoken";
 import { userModel } from "../models/userModel";
+import { ExtendedRequest } from "../types/extendedRequest";
 
-interface ExtendedRequest extends Request {
-    
-        user?: any;
-    
-}
 
 const validateJWT = (req: ExtendedRequest, res: Response, next: NextFunction) => {
 const authorizationHeader = req.get('authorization');
@@ -19,7 +15,7 @@ if (!token) {
     res.status(403).send('Bearer Token was not provided' );
     return;
     }
-    jwt.verify(token, "b$p)|3I0=4JO+@AA",async (err, payload) => {
+    jwt.verify(token, "b1ca21fc2cfeb79bc5a14300bb998f7c6496c12d2668d92f66742f5d713e5732",async (err, payload) => {
     if (err) {
         res.status(403).send( 'Invalid token' );
         return;
