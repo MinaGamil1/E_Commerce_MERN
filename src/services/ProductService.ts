@@ -10,7 +10,7 @@ export const seedInitialProducts = async () => {
             title: 'Dell Laptop',
             price: 15000,
             stock: 10,
-            image: '../imgs/dell-laptop.jpg'
+            image: 'https://pngtree.com/so/laptop'
         },
     ];
 

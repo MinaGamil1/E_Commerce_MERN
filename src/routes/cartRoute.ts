@@ -15,8 +15,14 @@ router.get(
 );
 router.post("/items", validateJWT, async (req:ExtendedRequest, res) => {
     const userId = req?.user?._id;
-    const { porductId, quantity } = req.body;
-    const response = await addItemToCart({ userId, porductId, quantity });
-    res.status(response.statusCode || 500).send(response.data);
+    const { productId, quantity } = req.body;
+    const response = await addItemToCart({ userId, productId, quantity });
+    res.status(response.statusCode).send(response.data);
 });
+/* router.put("/items", validateJWT, async (req:ExtendedRequest, res) => {
+    const userId = req?.user?._id;
+    const { productId, quantity } = req.body;
+    const response = await updateItemInCart({ userId, productId, quantity });
+    res.status(response.statusCode).send(response.data);
+}); */
 export default router;
