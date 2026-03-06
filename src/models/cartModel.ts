@@ -1,5 +1,7 @@
 import mongoose,{Schema,Document,ObjectId} from "mongoose";
 import { IProduct } from "./ProductModel";
+import router from "../routes/userRouter";
+import validateJWT from "../middlewares/validateJWT";
 
 
 
@@ -32,5 +34,4 @@ const cartSchema: Schema = new Schema<ICart>({
     totalAmount: { type: Number, required: true ,default: 0},
     status: { type: String, enum: cartStatusEnum, default: 'active' }
 });
-
 export const CartModel = mongoose.model<ICart>('Cart', cartSchema);
