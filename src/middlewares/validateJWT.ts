@@ -13,9 +13,8 @@ if (!authorizationHeader) {
 const token = authorizationHeader.split(" ")[1];
 if (!token) {
     res.status(403).send('Bearer Token was not provided' );
-    return;
-    }
-    jwt.verify(token, "b1ca21fc2cfeb79bc5a14300bb998f7c6496c12d2668d92f66742f5d713e5732",async (err, payload) => {
+    return;}
+    jwt.verify(token, process.env.JWT_SECRET || '',async (err, payload) => {
     if (err) {
         res.status(403).send( 'Invalid token' );
         return;

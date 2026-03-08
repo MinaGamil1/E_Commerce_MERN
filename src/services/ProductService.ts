@@ -1,10 +1,10 @@
-import { get } from "mongoose";
 import ProductModel from "../models/ProductModel";
 
 export const getAllProducts = async () => {
     return await ProductModel.find();
 };
 export const seedInitialProducts = async () => {
+    try {
     const Products =[
         {
             title: 'Dell Laptop',
@@ -15,7 +15,9 @@ export const seedInitialProducts = async () => {
     ];
 
     const existingProducts = await getAllProducts();
-    if (existingProducts.length === 0) {
+    if (existingProducts.length === 0) { 
         await ProductModel.insertMany(Products);
-    };
+    };} catch (error) {
+        console.error('Error seeding products:', error);
+    }
 };
