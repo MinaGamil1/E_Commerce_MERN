@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 
 function ResponsiveAppBar() {
-  const {username,isAuthenticated} = useAuth();
+  const {username,isAuthenticated , logout} = useAuth();
  
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -33,6 +33,11 @@ const navigate = useNavigate();
   const handleLogin = () => {
     navigate("/login");
   };
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    handleCloseUserMenu();
+  }
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -91,7 +96,7 @@ const navigate = useNavigate();
                     My Orders
                   </Typography>
                 </MenuItem>
-                 <MenuItem  onClick={handleCloseUserMenu}>
+                 <MenuItem  onClick={handleLogout}>
                   <Typography sx={{ textAlign: "center" }}>
                     Logout
                     
