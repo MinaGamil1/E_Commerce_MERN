@@ -11,11 +11,20 @@ const creatCartForUser = async ({ userId }: CreateCartForUser) => {
 };
 interface GetActiveCartForUser {
   userId: string;
+  populateProdduct?: boolean;
 }
 export const getActiveCartForUser = async ({
   userId,
+  populateProdduct,
 }: GetActiveCartForUser) => {
-  let cart = await CartModel.findOne({ userId, status: "active" });
+  let cart;
+  if (populateProdduct) {
+    cart = await CartModel.findOne({ userId, status: "active" }).populate(
+      "items.product",
+    );
+  } else {
+    cart = await CartModel.findOne({ userId, status: "active" });
+  }
   if (!cart) {
     cart = await creatCartForUser({ userId });
   }
@@ -28,8 +37,8 @@ export const clearCart = async ({ userId }: clearCart) => {
   const cart = await getActiveCartForUser({ userId });
   cart.items = [];
   cart.totalAmount = 0;
-  const updatedCart = await cart.save();
-  return { data: updatedCart, statusCode: 200 };
+  await cart.save();
+  return { data:await getActiveCartForUser({userId,populateProdduct:true}), statusCode: 200 };
 };
 interface addItemToCart {
   userId: string;
@@ -96,8 +105,11 @@ export const updateItemInCart = async ({
   existsInCart.quantity = quantity;
   total += existsInCart.quantity * existsInCart.unitPrice;
   cart.totalAmount = total;
-  const updatedCart = await cart.save();
-  return { data: updatedCart, statusCode: 200 };
+  await cart.save();
+  return {
+    data: await getActiveCartForUser({ userId, populateProdduct: true }),
+    statusCode: 200,
+  };
 };
 interface deleteItemFromCart {
   userId: string;
@@ -120,15 +132,11 @@ export const deleteItemFromCart = async ({
   const total = calculateCartTotalItems({ cartItems: otherCartItems });
   cart.items = otherCartItems;
   cart.totalAmount = total;
-  const updatedCart = await cart.save();
-  return { data: updatedCart, statusCode: 200 };
+  await cart.save();
+  return { data: await getActiveCartForUser({userId,populateProdduct:true}), statusCode: 200 };
 };
 
-const calculateCartTotalItems = ({
-  cartItems,
-}: {
-  cartItems: ICartItem[];
-}) => {
+const calculateCartTotalItems = ({ cartItems }: { cartItems: ICartItem[] }) => {
   const total = cartItems.reduce((sum, product) => {
     sum += product.quantity * product.unitPrice;
     return sum;
@@ -137,37 +145,36 @@ const calculateCartTotalItems = ({
 };
 interface checkout {
   userId: string;
-  address:string;
+  address: string;
 }
 export const checkout = async ({ userId, address }: checkout) => {
-  if(!address){
+  if (!address) {
     return { data: "Address is required for checkout", statusCode: 400 };
   }
-  const cart = await getActiveCartForUser({ userId });  
-  
+  const cart = await getActiveCartForUser({ userId });
+
   const orderItems: IOrderItem[] = [];
   for (const item of cart.items) {
     const product = await ProductModel.findById(item.product);
     if (!product) {
       return { data: "Product not found", statusCode: 400 };
     }
-  const orderItem: IOrderItem = {
+    const orderItem: IOrderItem = {
       productTitle: product.title,
       productImage: product.image,
       unitPrice: item.unitPrice,
       quantity: item.quantity,
-  };
-  orderItems.push(orderItem);
-}
-const order = await orderModel.create({
-  orderItems,
-  userId,
-  total: cart.totalAmount,
-  address,
-});
-await order.save();
-cart.status = "completed";
-await cart.save();
-return { data: order, statusCode: 200 };
+    };
+    orderItems.push(orderItem);
+  }
+  const order = await orderModel.create({
+    orderItems,
+    userId,
+    total: cart.totalAmount,
+    address,
+  });
+  await order.save();
+  cart.status = "completed";
+  await cart.save();
+  return { data: order, statusCode: 200 };
 };
-

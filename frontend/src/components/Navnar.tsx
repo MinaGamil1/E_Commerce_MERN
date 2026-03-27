@@ -14,10 +14,11 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useAuth } from "../context/Auth/AuthContext";
 import { Badge, Button, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/Cart/CartContext";
 
 function ResponsiveAppBar() {
   const { username, isAuthenticated, logout } = useAuth();
-
+  const{cartItems}= useCart()
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
@@ -54,6 +55,7 @@ function ResponsiveAppBar() {
               alignItems: "center",
             }}
           >
+            <Button variant="text" sx={{color:'#ffff'}} onClick={()=>navigate('/')}>
             <Box
               sx={{
                 display: "flex",
@@ -77,6 +79,7 @@ function ResponsiveAppBar() {
                 Tech Hub
               </Typography>
             </Box>
+            </Button>
             <Box
               sx={{
                 flexGrow: 0,
@@ -87,7 +90,7 @@ function ResponsiveAppBar() {
               }}
             >
               <IconButton aria-label="cart" onClick={handleCart}>
-                <Badge badgeContent={1} color="secondary">
+                <Badge badgeContent={cartItems.length} color="secondary">
                   <ShoppingCartIcon sx={{color:"#ffffff"}} />
                 </Badge>
               </IconButton>
